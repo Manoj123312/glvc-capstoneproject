@@ -30,10 +30,10 @@ Swagger UI: http://localhost:8080/swagger-ui.html (click **Authorize**, paste th
 ---
 ## 1. Download the project
 ```bash
-git clone https://github.com/Manoj123312/glvc-capstoneproject.git
+git clone -b capstone-project https://github.com/Manoj123312/glvc-capstoneproject.git
 cd glvc-capstoneproject
 ```
-(or download ZIP: GitHub → **Code → Download ZIP**, then extract.)
+(or on GitHub switch to the `capstone-project` branch → **Code → Download ZIP**, then extract.)
 
 ## 2. Prerequisites (install once)
 | Tool | Version | Check |
