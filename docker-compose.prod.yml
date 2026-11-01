@@ -1,0 +1,42 @@
+# Used on the AWS EC2 instance by the Jenkins pipeline (images are pulled from Docker Hub).
+# Required env var: DOCKER_USER. Optional: JWT_SECRET, MYSQL_ROOT_PASSWORD.
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: foodie_db
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: always
+
+  backend:
+    image: ${DOCKER_USER}/foodie-backend:latest
+    environment:
+      SPRING_PROFILES_ACTIVE: mysql
+      DB_URL: jdbc:mysql://mysql:3306/foodie_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      JWT_SECRET: ${JWT_SECRET:-foodie-capstone-super-secret-key-change-me-in-production-0123456789}
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: always
+
+  frontend:
+    image: ${DOCKER_USER}/foodie-frontend:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always
+
+volumes:
+  mysql-data:
